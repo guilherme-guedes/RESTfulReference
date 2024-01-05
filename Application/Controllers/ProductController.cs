@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestfulReference.Domain.Entities;
 using RestfulReference.Infrastructure;
 using RestfulReference.Infrastructure.Repositories;
 using RESTfulReference.Services;
 using RESTfulReference.Exceptions;
+using RESTfulReference.Domain.Entities.Catalog;
 
 namespace RestfulReference.Application.Controllers
 {
@@ -30,15 +30,14 @@ namespace RestfulReference.Application.Controllers
                 
                 new Catalog(repository).CheckIntegrity(product);
 
-                repository.Create(product);
-
-                return Accepted();
+                var result = repository.Create(product);
+                return Created($"{result.Id}", result);
             }
             catch (ArgumentNullException argEx)
             {
                 return BadRequest(argEx.Message);
             }
-            catch (ConflictedProductException confEx)
+            catch (EntityConflictedException confEx)
             {
                 return Conflict(confEx.Message);
             }
@@ -63,9 +62,7 @@ namespace RestfulReference.Application.Controllers
                 if (!catalog.CheckIfModified(product))
                     return StatusCode(304);
 
-                repository.Update(product);
-
-                return NoContent();
+                return Ok(repository.Update(product));
             }
             catch (EntityNotFoundException enfEx)
             {
@@ -75,7 +72,7 @@ namespace RestfulReference.Application.Controllers
             {
                 return BadRequest(argEx.Message);
             }
-            catch (ConflictedProductException confEx)
+            catch (EntityConflictedException confEx)
             {
                 return Conflict(confEx.Message);
             }
@@ -86,7 +83,7 @@ namespace RestfulReference.Application.Controllers
         }
 
 
-        [HttpGet]
+        [HttpDelete]
         public IActionResult Delete(string id)
         {
             try
@@ -110,6 +107,7 @@ namespace RestfulReference.Application.Controllers
 
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult Get(string id)
         {
             try
@@ -118,6 +116,28 @@ namespace RestfulReference.Application.Controllers
 
                 if (product == null)
                     return NotFound();
+
+                return Ok(product);
+            }
+            catch (MalformedIdException malEx)
+            {
+                return BadRequest(malEx.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal error");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            try
+            {
+                var product = new ProductRepository(this._db).GetAll();
+
+                if (product == null)
+                    return NoContent();
 
                 return Ok(product);
             }

@@ -1,4 +1,4 @@
-﻿using RestfulReference.Domain.Entities;
+﻿using RESTfulReference.Domain.Entities.Catalog;
 using RESTfulReference.Exceptions;
 
 namespace RestfulReference.Infrastructure.Repositories
@@ -9,16 +9,17 @@ namespace RestfulReference.Infrastructure.Repositories
 
         public ProductRepository(DatabaseContext db) { this._db = db; }
 
-        public Guid Create(Product product)
+        public Product Create(Product product)
         {
             if (product == null) throw new ArgumentNullException("Empty product info");
 
             this._db.Products.Add(product);
             this._db.SaveChanges();
 
-            return product.Id;
+            return product;
         }
-        public void Update(Product product)
+        
+        public Product Update(Product product)
         {
             if (product == null) throw new ArgumentNullException("Empty product info");
 
@@ -30,6 +31,8 @@ namespace RestfulReference.Infrastructure.Repositories
             productDb.Price = product.Price;
 
             this._db.SaveChanges();
+
+            return product;
         }
 
 
@@ -44,6 +47,12 @@ namespace RestfulReference.Infrastructure.Repositories
 
             this._db.Products.Remove(productDb);
             this._db.SaveChanges();
+        }
+    
+
+        public List<Product> GetAll()
+        {
+            return this._db.Products.AsQueryable().ToList();
         }
 
         public Product GetById(string id)

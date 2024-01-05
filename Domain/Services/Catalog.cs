@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using RestfulReference.Domain.Entities;
 using RestfulReference.Infrastructure.Repositories;
+using RESTfulReference.Domain.Entities.Catalog;
 using RESTfulReference.Exceptions;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,7 +20,7 @@ namespace RESTfulReference.Services
 
             var productSameName = repository.GetByName(product.Name);
             if (productSameName != null)
-                throw new ConflictedProductException("There is already a product with this name");
+                throw new EntityConflictedException("There is already a product with this name");
         }
 
         public bool CheckIfModified(Product product)

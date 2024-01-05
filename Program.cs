@@ -12,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMvc();
+
+builder.Services.AddDbContext<DatabaseContext>(opt => opt.UseInMemoryDatabase("db"));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -25,9 +29,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-builder.Services.AddDbContext<DatabaseContext>(opt => opt.UseInMemoryDatabase("db"));
-
-builder.Services.AddMvc();
 
 app.Run();
