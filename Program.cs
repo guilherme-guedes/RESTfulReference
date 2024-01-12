@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using RestfulReference.Infrastructure;
-using System;
+using RESTfulReference.Infraestrutura.Catalogo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMvc();
 
-builder.Services.AddDbContext<DatabaseContext>(opt => opt.UseInMemoryDatabase("db"));
+builder.Services.AddDbContext<ContextoDadosCatalogo>(opt => opt.UseInMemoryDatabase("db"));
 
 var app = builder.Build();
 
